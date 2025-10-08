@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  admin_id INT NOT NULL,
+  token CHAR(64) NOT NULL UNIQUE,
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (admin_id) REFERENCES administrators(id) ON DELETE CASCADE
+);
+ALTER TABLE password_reset_tokens
+ADD COLUMN username VARCHAR(50) NOT NULL AFTER admin_id;

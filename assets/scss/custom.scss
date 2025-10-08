@@ -1,0 +1,27 @@
+// Variable overrides first
+$primary: #900;
+$enable-shadows: true;
+
+
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-color: rgba(var(--bs-primary-rgb), 0.4);
+  }
+}
+.grade{
+  border-top:1px solid #ff0000 !important;
+  border-left:1px solid #ff0000 !important;
+  border-right:1px solid #ff0000 !important;
+  padding-top: 1%;
+  text-align: center
+}
+.word_sl{
+  border-top: 2px solid rgba(172, 172, 172, 0.219) !important;
+  border-bottom: rgba(172, 172, 172, 0.219) 2px solid !important; 
+}
+// Then import Bootstrap
+@import "../../node_modules/bootstrap/scss/bootstrap";

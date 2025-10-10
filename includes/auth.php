@@ -21,6 +21,7 @@ function loginUser(array $user): void{
     ];
 }
 
+
 function logoutUser(): void{
     $_SESSION = [];
     if (ini_get("session.use_cookies")) {
@@ -34,7 +35,7 @@ function logoutUser(): void{
 
 function requireLogin():void{
     if (!is_logged_in()) {
-        header('Location: /School-Dictionary/pages/login.php');
+        header('Location: /School-Dictionary/pages/login/index.php');
         exit;
     }
 }
@@ -52,7 +53,7 @@ function verifyCsrfToken(string $token): bool {
 
 function requirePendingReset(): void {
     if (!isset($_SESSION['pending_reset'])) {
-        header('Location: /School-Dictionary/pages/login.php');
+        header('Location: /School-Dictionary/pages/login/index.php');
         exit;
     }
 }
@@ -93,4 +94,97 @@ function renderUserStatus(): void {
       <strong><?= $displayName ?></strong>
     </p>
     <?php
+}
+
+function isSuperAdmin(PDO $pdo): bool {
+    if (empty($_SESSION['admin']['id'])) {
+        return false;
+    }
+
+    $stmt = $pdo->prepare("SELECT is_superadmin FROM administrators WHERE id = :id LIMIT 1");
+    $stmt->execute([':id' => $_SESSION['admin']['id']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $result && (int)$result['is_superadmin'] === 1;
+}
+
+
+function addAdministrator(
+    PDO $pdo,
+    string $username,
+    string $password,
+    bool $is_admin = false,
+    bool $is_superadmin = false,
+    bool $force_password_change = false,
+    ?int $created_by = null
+): bool {
+    // Hash password securely
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+    $stmt = $pdo->prepare("
+        INSERT INTO administrators (
+            username,
+            password_hash,
+            is_admin,
+            is_superadmin,
+            force_password_change,
+            created_at,
+            updated_at,
+            last_password_reset_at,
+            last_password_reset_by
+        ) VALUES (
+            :username,
+            :password_hash,
+            :is_admin,
+            :is_superadmin,
+            :force_password_change,
+            NOW(),
+            NOW(),
+            NULL,
+            :created_by
+        )
+    ");
+
+    return $stmt->execute([
+        ':username' => $username,
+        ':password_hash' => $password_hash,
+        ':is_admin' => $is_admin ? 1 : 0,
+        ':is_superadmin' => $is_superadmin ? 1 : 0,
+        ':force_password_change' => $force_password_change ? 1 : 0,
+        ':created_by' => $created_by,
+    ]);}
+
+    function getUserByUsername(PDO $pdo, string $username): ?array {
+    $stmt = $pdo->prepare("SELECT * FROM administrators WHERE username = :u LIMIT 1");
+    $stmt->execute([':u' => $username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $user ?: null;
+}
+
+function updatePassword(PDO $pdo, int $id, string $newPassword, bool $clearForceFlag = true): bool {
+    $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+    $sql = "
+        UPDATE administrators
+        SET password_hash = :hash,
+            updated_at = NOW(),
+            last_password_reset_at = NOW(),
+            last_password_reset_by = :id" .
+        ($clearForceFlag ? ", force_password_change = 0" : "") . "
+        WHERE id = :id
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([':hash' => $hash, ':id' => $id]);
+}
+
+function requireForcePasswordChange(PDO $pdo): void {
+    if (!is_logged_in()) {
+        header('Location: /School-Dictionary/pages/login/index.php');
+        exit;
+    }
+
+    if (hasForcePasswordFlag($pdo, $_SESSION['admin']['id'])) {
+        header('Location: /School-Dictionary/pages/reset_password/index.php');
+        exit;
+    }
 }

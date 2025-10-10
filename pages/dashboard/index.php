@@ -1,8 +1,8 @@
 <?php 
     require_once __DIR__ . '/../../includes/db.php';
     require_once __DIR__ . '/../../includes/auth.php';
-
     requireLogin();
+    requireForcePasswordChange($pdo);
 
     $admins = getAllAdministrators($pdo);
 
@@ -17,6 +17,7 @@
 
         <section class="d-flex justify-content-center align-items-center">
            <p class="h3">Dashboard</p>
+           <button class="btn btn-primary ms-3" onclick="location.href='admin_dashboard.php'">Administrators</button>
         </section>
 
        <section class="cards">

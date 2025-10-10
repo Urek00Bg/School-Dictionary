@@ -11,14 +11,14 @@
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-3 mb-lg-0 ml-5">
                     <li class="nav-item"><a class="nav-link active" aria-current="page" href="/School-Dictionary/index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active isLoginActive" aria-current="page" href="/School-Dictionary/pages/login.php">Log in</a></li>
-                    <li class="nav-item"><a class="nav-link active isLoginActive" aria-current="page" href="/School-Dictionary/pages/dashboard/dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active isLoginActive" aria-current="page" href="/School-Dictionary/pages/login/index.php">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active isLoginActive" aria-current="page" href="/School-Dictionary/pages/dashboard/index.php">Dashboard</a></li>
                 </ul>
                 <form class="d-flex ms-lg-0 m-2 role="search" onsubmit="return false;">
                     <input id="q" class="form-control form-control-sm me-2" type="search" name="q" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success btn-sm" type="button" id="btnSearch">Search</button>
                 </form>
-                <form class="m-2" action="/School-Dictionary/pages/logout.php" method="post" class="d-inline">
+                <form class="m-2" action="/School-Dictionary/pages/logout/logout.php" method="post" class="d-inline">
                     <button type="submit" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-box-arrow-right"></i> Logout
                 </button>
